@@ -6,7 +6,7 @@ server:
 spring:
   datasource:
     password: 54903214
-    url: jdbc:postgresql://localhost:5432/recoletadb
+    url: jdbc:postgresql://localhost:5432/recoleta_db_v2
     username: postgres
   jpa:
     hibernate:
@@ -16,4 +16,3 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: true
-

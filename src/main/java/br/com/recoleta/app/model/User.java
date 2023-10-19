@@ -23,11 +23,11 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
-@Table(name = "user", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
+@Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class User {
 	
 	@Id
-	@SequenceGenerator(name = "user_sequence", sequenceName = "user_sequence", allocationSize = 1)
+	@SequenceGenerator(name = "users_sequence", sequenceName = "users_sequence", allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long  id;
 	
@@ -40,7 +40,7 @@ public class User {
 	private String password;
 	
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	@JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+	@JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
 	inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Collection<Role> roles;
 	
