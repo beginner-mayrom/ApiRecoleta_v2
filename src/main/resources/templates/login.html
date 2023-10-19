@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./bootstrap-5.2.3-dist/css/bootstrap.min.css">
+    <script src="./bootstrap-5.2.3-dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="./style/login.module.css">
+    <link rel="stylesheet" href="./style/global.css">
+    <link rel="icon" type="image/png" href="./imgs/favicon.ico">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>ReColeta | Login</title>
+</head>
+
+<body>
+    <div class="login-container">
+        <div class="login-box-background">
+            <div class="login-box-container">
+                <div class="container-login-logo">
+                    <img class="login-logo" src="./imgs/reColetaLogo.png" alt="reColeta">
+                </div>
+                <div class="login-box">
+                    <span>Login</span>
+                    <form id="login-form">
+                        <div class="login-form-profile-icon">
+                            <img class="login-profile" src="https://i.ibb.co/2W1PfQ6/default-User.png" alt="profile">
+                        </div>
+                        <div class="login-form-welcome">
+                            <span>Bem vindo, User name</span>
+                        </div>
+                        
+                        <span>Email :</span>
+                        <input type="text" id="username" placeholder="Email do usuário">
+                        <span>Senha :</span>
+                        <input type="password" id="password" placeholder="Senha">
+                        <div class="login-button">
+                            <button type="submit">Entrar</button>
+                            <!--<a href="../pages/userArea.html" class="button">Entrar</a>-->
+                        </div>
+                        <div class="login-forgot-password">
+                            <a href="">Esqueceu sua senha ?</a>
+                        </div>
+                    </form>
+
+                    <div id="result"></div>
+
+                </div>
+                <div class="login-new-user">
+                    <a href="">Ainda não tem cadastro ?</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./js/login.js"></script>
+
+</body>
+
+</html>
