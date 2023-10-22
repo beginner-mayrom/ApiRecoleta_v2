@@ -12,16 +12,17 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@NoArgsConstructor
 @Entity
 @Table(name = "users", uniqueConstraints = @UniqueConstraint(columnNames = "email"))
 public class User {
@@ -40,17 +41,17 @@ public class User {
 	private String password;
 	
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	@JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "users_id", referencedColumnName = "id"),
+	@JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
 	inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Collection<Role> roles;
 	
-	@OneToOne(fetch = FetchType.EAGER)
-	@JoinColumn(name = "user_type_id")
-	private UserType userType;
+	@ManyToMany(cascade = CascadeType.ALL)
+	@JoinTable(name = "users_types", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+	inverseJoinColumns = @JoinColumn(name = "user_type_id"))
+	private Collection<UserType> userType;
 
 	public User(String firstName, String lastName, String email, String password, Collection<Role> roles,
-			UserType userType) {
-		super();
+			Collection<UserType> userType) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.email = email;
@@ -58,6 +59,4 @@ public class User {
 		this.roles = roles;
 		this.userType = userType;
 	}
-	
-
 }

@@ -22,6 +22,7 @@ import br.com.recoleta.app.repository.UserRepository;
 @Service
 public class UserServiceImpl implements UserService{
 	
+	
 	private UserRepository userRepository;
 	
 	@Autowired
@@ -32,6 +33,17 @@ public class UserServiceImpl implements UserService{
 		this.userRepository = userRepository;
 	}
 
+	@Override
+	public User save(UserRegistrationDto registrationDto) {
+		
+		User user = new User(registrationDto.getFirstName(), registrationDto.getLastName(),
+				registrationDto.getEmail(), passwordEnconder.encode(registrationDto.getPassword()),
+				Arrays.asList(new Role("ROLE_USER")), Arrays.asList(new UserType("COLLECTS_WASTE")));
+		
+		return userRepository.save(user);
+	}
+	
+	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		
@@ -46,19 +58,11 @@ public class UserServiceImpl implements UserService{
 	
 	private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles){
 		
-		return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).
-				collect(Collectors.toList());
+		return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
 	}
+	
 
-	@Override
-	public User save(UserRegistrationDto registrationDto) {
-		
-		User user = new User(registrationDto.getFirstName(), registrationDto.getLastName(),
-				registrationDto.getEmail(), passwordEnconder.encode(registrationDto.getPassword()),
-				Arrays.asList(new Role("USER_ROLE")), new UserType("PRODUCES_WASTE"));
-		
-		return userRepository.save(user);
-	}
+	
 
 	@Override
 	public List<User> getAll() {
