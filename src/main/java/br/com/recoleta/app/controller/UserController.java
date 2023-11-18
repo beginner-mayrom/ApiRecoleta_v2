@@ -5,6 +5,11 @@ import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +22,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import br.com.recoleta.app.dto.UserRegistrationDto;
 import br.com.recoleta.app.model.User;
 import br.com.recoleta.app.service.UserService;
-import br.com.recoleta.app.service.UserServiceImpl;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -26,8 +30,8 @@ import lombok.AllArgsConstructor;
 public class UserController {
 
 	private UserService userService;
-	
-	private UserServiceImpl userServiceImpl;
+
+	private AuthenticationManager authenticationManager;
 
 	/*
 	 * @ModelAttribute("user") public UserRegistrationDto userRegistrationDto() {
@@ -54,16 +58,37 @@ public class UserController {
 		
 	}
 	
+	/*
+	 * @PostMapping("/login") public ResponseEntity<User>
+	 * loadUserAccount(@RequestBody User user){
+	 * 
+	 * String email = user.getEmail(); String password = user.getPassword();
+	 * 
+	 * UserDetails loadUserByUsername = userServiceImpl.loadUserByUsername(email);
+	 * 
+	 * if(loadUserByUsername.getPassword() == password) {
+	 * 
+	 * return ResponseEntity.ok().build();
+	 * 
+	 * } return ResponseEntity.notFound().build(); }
+	 */
+	
 	@PostMapping("/login")
-	public ResponseEntity<User> loadUserAccount(@RequestBody User user){
-		
-		String email = user.getEmail();
-		
-		userServiceImpl.loadUserByUsername(email);
-		
-		return ResponseEntity.ok().build();
-		
+	public ResponseEntity<?> loadUserAccount(@RequestBody User user) {
+	    String email = user.getEmail();
+	    String password = user.getPassword();
+
+	    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(email, password);
+
+	    try {
+	        Authentication authentication = authenticationManager.authenticate(authenticationToken);
+	        SecurityContextHolder.getContext().setAuthentication(authentication);
+	        return ResponseEntity.ok(authenticationToken);
+	    } catch (AuthenticationException e) {
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+	    }
 	}
+	
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<Object> getUser(@PathVariable Long id) {

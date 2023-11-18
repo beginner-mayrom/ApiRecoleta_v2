@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserService{
 
 		User user = userRepository.findByEmail(username);
 		if(user == null) {
-			throw new UsernameNotFoundException("login ou senha inválidos.");
+			throw new UsernameNotFoundException("usuário não encontrado.");
 		}
 
 		return new org.springframework.security.core.userdetails.User(user.getEmail(),
