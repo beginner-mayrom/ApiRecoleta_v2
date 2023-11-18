@@ -19,7 +19,7 @@ import lombok.Setter;
 public class UserType {
 	
 	@Id
-	@SequenceGenerator(name = "role_sequence", sequenceName = "role_sequence", allocationSize = 1)
+	@SequenceGenerator(name = "user_type_sequence", sequenceName = "user_type_sequence", allocationSize = 1)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	private String name;

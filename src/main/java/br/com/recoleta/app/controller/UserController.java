@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import br.com.recoleta.app.dto.UserRegistrationDto;
 import br.com.recoleta.app.model.User;
 import br.com.recoleta.app.service.UserService;
+import br.com.recoleta.app.service.UserServiceImpl;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
@@ -25,6 +26,8 @@ import lombok.AllArgsConstructor;
 public class UserController {
 
 	private UserService userService;
+	
+	private UserServiceImpl userServiceImpl;
 
 	/*
 	 * @ModelAttribute("user") public UserRegistrationDto userRegistrationDto() {
@@ -48,6 +51,17 @@ public class UserController {
 		User save = userService.save(registrationDto);
 		
 		return ResponseEntity.status(HttpStatus.CREATED).body(save);
+		
+	}
+	
+	@PostMapping("/login")
+	public ResponseEntity<User> loadUserAccount(@RequestBody User user){
+		
+		String email = user.getEmail();
+		
+		userServiceImpl.loadUserByUsername(email);
+		
+		return ResponseEntity.ok().build();
 		
 	}
 	
