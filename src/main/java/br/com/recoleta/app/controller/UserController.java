@@ -3,6 +3,8 @@ package br.com.recoleta.app.controller;
 import java.util.List;
 import java.util.Optional;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -123,5 +125,10 @@ public class UserController {
 		userService.deleteUser(id);
 		return ResponseEntity.ok().build();
 	}
+	
+	@PostConstruct
+    public void initAdmin() {
+        userService.saveAdmin();
+    }
 
 }

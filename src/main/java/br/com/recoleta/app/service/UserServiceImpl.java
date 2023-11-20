@@ -43,8 +43,8 @@ public class UserServiceImpl implements UserService{
 
 		return userRepository.save(user);
 	}
-
-
+	
+	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
@@ -61,8 +61,6 @@ public class UserServiceImpl implements UserService{
 
 		return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
 	}
-
-
 
 
 	@Override
@@ -108,6 +106,16 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public void deleteUser(Long id) {
 		userRepository.deleteById(id);
+	}
+
+	@Override
+	public void saveAdmin() {
+		
+		User user = new User("admin", "",
+				"admin@admin.com", passwordEnconder.encode("admin"),
+				Arrays.asList(new Role("ROLE_ADMIN")), Arrays.asList(new UserType("")));
+
+		userRepository.save(user);
 	}
 
 }
