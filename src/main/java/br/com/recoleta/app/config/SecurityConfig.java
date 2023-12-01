@@ -9,8 +9,9 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 import br.com.recoleta.app.service.UserService;
 
@@ -26,11 +27,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 		return new BCryptPasswordEncoder();
 	}
 	
-	@Override
-    @Bean // Sobrescrevendo o método para expor o AuthenticationManager como um Bean
-    public AuthenticationManager authenticationManagerBean() throws Exception {
-        return super.authenticationManagerBean();
+	@Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
     }
+
+	@Override
+	@Bean // Sobrescrevendo o método para expor o AuthenticationManager como um Bean
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
 
 	@Bean
 	public DaoAuthenticationProvider authenticationProvider() {
@@ -45,35 +51,23 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
 	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
 
 		auth.authenticationProvider(authenticationProvider());
-		
+
 		/* auth.userDetailsService(userService).passwordEncoder(passwordEncoder()); */
 	}
 
 
 
-	/*
-	 * @Override protected void configure(HttpSecurity http) throws Exception {
-	 * 
-	 * http.authorizeRequests().antMatchers("/registration**")
-	 * .permitAll().anyRequest().authenticated()
-	 * .and().formLogin().loginPage("/login")
-	 * .permitAll().and().logout().invalidateHttpSession(true).clearAuthentication(
-	 * true) .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-	 * .logoutSuccessUrl("/login?logout").permitAll();
-	 * 
-	 * }
-	 */
-
-
-
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		http.csrf().disable()
-        .authorizeRequests()
-            .antMatchers("/user/registration", "/user/login").permitAll()
-            .anyRequest().authenticated(); 
+		http.csrf().disable() 
+		.authorizeRequests()
+		.antMatchers("/user/registration", "/user/login", "/**").permitAll()
+		.anyRequest().authenticated(); 
+		
+		http.sessionManagement().sessionAuthenticationStrategy(sessionAuthenticationStrategy());
 	}
 
-
-
+	private CustomSessionAuthenticationStrategy sessionAuthenticationStrategy() {
+        return new CustomSessionAuthenticationStrategy(sessionRegistry());
+    }
 }

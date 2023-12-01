@@ -1,10 +1,11 @@
 package br.com.recoleta.app.service;
 
-import java.util.Arrays;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,16 +19,26 @@ import br.com.recoleta.app.dto.UserRegistrationDto;
 import br.com.recoleta.app.model.Role;
 import br.com.recoleta.app.model.User;
 import br.com.recoleta.app.model.UserType;
+import br.com.recoleta.app.repository.RoleRepository;
 import br.com.recoleta.app.repository.UserRepository;
+import br.com.recoleta.app.repository.UserTypeRepository;
+
 
 @Service
 public class UserServiceImpl implements UserService{
 
-
+	@Autowired
 	private UserRepository userRepository;
+	
+	@Autowired
+	private RoleRepository roleRepository;
+	
+	@Autowired
+	private UserTypeRepository userTypeRepository;
 
 	@Autowired
 	private BCryptPasswordEncoder passwordEnconder;
+	
 
 	public UserServiceImpl(UserRepository userRepository) {
 		super();
@@ -36,11 +47,24 @@ public class UserServiceImpl implements UserService{
 
 	@Override
 	public User save(UserRegistrationDto registrationDto) {
-
+		
+		Role userRole = roleRepository.findByName("ROLE_USER").orElseThrow(() -> new IllegalArgumentException("Role not found"));
+		UserType userType1 = userTypeRepository.findByName("PRODUCES_WASTE").orElseThrow(() -> new IllegalArgumentException("Role not found"));
+		UserType userType2 = userTypeRepository.findByName("COLLECTS_WASTE").orElseThrow(() -> new IllegalArgumentException("Role not found"));
+		
 		User user = new User(registrationDto.getFirstName(), registrationDto.getLastName(),
-				registrationDto.getEmail(), passwordEnconder.encode(registrationDto.getPassword()),
-				Arrays.asList(new Role("ROLE_USER")), Arrays.asList(new UserType("COLLECTS_WASTE")));
-
+				registrationDto.getEmail(), passwordEnconder.encode(registrationDto.getPassword()));
+		
+		user.setRoles(userRole);
+		
+		if(userType1.getName().equals(registrationDto.getUserType())) {
+			user.setUserType(userType1);
+		}
+		
+		if(userType2.getName().equals(registrationDto.getUserType())) {
+			user.setUserType(userType2);
+		}
+		
 		return userRepository.save(user);
 	}
 	
@@ -57,11 +81,10 @@ public class UserServiceImpl implements UserService{
 				user.getPassword(), mapRolesToAuthorities(user.getRoles()));
 	}
 
-	private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Collection<Role> roles){
 
-		return roles.stream().map(role -> new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
+	private Collection<? extends GrantedAuthority> mapRolesToAuthorities(Role role) {
+	    return Stream.of(new SimpleGrantedAuthority(role.getName())).collect(Collectors.toList());
 	}
-
 
 	@Override
 	public List<User> getAll() {
@@ -111,11 +134,19 @@ public class UserServiceImpl implements UserService{
 	@Override
 	public void saveAdmin() {
 		
-		User user = new User("admin", "",
-				"admin@admin.com", passwordEnconder.encode("admin"),
-				Arrays.asList(new Role("ROLE_ADMIN")), Arrays.asList(new UserType("")));
+		Role adminRole = roleRepository.findByName("ROLE_ADMIN").orElseThrow(() -> new IllegalArgumentException("Role not found"));
+		
+		User adminUser = new User("admin", null,
+				"admin@admin.com", passwordEnconder.encode("admin"));
+		
+		adminUser.setRoles(adminRole);
 
-		userRepository.save(user);
+		userRepository.save(adminUser);
+	}
+
+	@Override
+	public User findByEmail(String email) {
+		return userRepository.findByEmail(email);
 	}
 
 }
